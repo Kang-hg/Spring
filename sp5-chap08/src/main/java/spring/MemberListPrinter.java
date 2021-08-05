@@ -12,15 +12,14 @@ public class MemberListPrinter {
 	private MemberDao memberDao;
 	private MemberPrinter printer;
 
-	public MemberListPrinter() {
-	}
-	
 	public MemberListPrinter(MemberDao memberDao, MemberPrinter printer) {
 		this.memberDao = memberDao;
 		this.printer = printer;
 	}
 
 	public void printAll() {
+		//컬렉션 <- List, Set, Map
+		//부모인 컬렉션을 받는다.
 		Collection<Member> members = memberDao.selectAll();
 		members.forEach(m -> printer.print(m));
 	}
@@ -30,7 +29,7 @@ public class MemberListPrinter {
 		this.memberDao = memberDao;
 	}
 	
-	@Autowired
+//	@Autowired
 	@Qualifier("printer")
 	public void setMemberPrinter(MemberPrinter printer)
 	{

@@ -26,7 +26,6 @@ public class DbQuery {
 				rs.next();
 				return rs.getInt(1);
 			}
-			
 		}
 		catch (SQLException e) 
 		{

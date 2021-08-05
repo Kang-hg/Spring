@@ -6,6 +6,7 @@ public class MemberRegisterService {
 
 	private MemberDao memberDao;
 	
+	// 생성자 오버로딩
 	public MemberRegisterService()
 	{
 		
