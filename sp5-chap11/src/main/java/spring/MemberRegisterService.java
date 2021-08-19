@@ -33,4 +33,31 @@ public class MemberRegisterService {
 		
 	}
 	
+	public boolean loginCheck(RegisterRequest req)
+	{
+		Member member = memberDao.selectByEmail(req.getEmail());
+		
+		if (member == null)
+		{
+			throw new MemberNotFoundException();
+		}
+		
+		if (member.getPassword().equals(req.getPassword()))
+		{
+			return true;
+		}
+		else
+			return false;
+	}
+
+//	public int checkCount(RegisterRequest req)
+//	{
+//		int count = memberDao.checkCount(req.getEmail(), req.getPassword());
+//		return count;
+//	}
+	
 }
+
+
+
+

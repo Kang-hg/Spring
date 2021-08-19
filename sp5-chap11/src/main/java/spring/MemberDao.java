@@ -107,4 +107,16 @@ public class MemberDao {
 				});
 		return results;
 	}
+	
+//	public int checkCount(String email, String pw)
+//	{
+//		String str = "select count(*) from MEMBER where EMAIL = '"+email+"' and PASSWORD = '" + pw +"'";
+//		Integer count = jdbcTemplate.queryForObject(str, Integer.class);
+//		return count;
+//	}
 }
+
+
+
+
+

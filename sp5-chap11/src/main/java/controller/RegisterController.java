@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import spring.DuplicateMemberException;
+import spring.Member;
+import spring.MemberNotFoundException;
 import spring.MemberRegisterService;
 import spring.RegisterRequest;
 
@@ -14,6 +16,7 @@ import spring.RegisterRequest;
 public class RegisterController {
 	
 	private MemberRegisterService memberRegisterService;
+	private Member member;
 	
 	
 	public void setMemberRegisterService(MemberRegisterService memberRegisterService) {
@@ -63,6 +66,55 @@ public class RegisterController {
 			return "register/step2";
 		}
 	}
+	
+	@RequestMapping("/login")
+	public String handleLogin(Model model)
+	{
+		model.addAttribute("registerRequest", new RegisterRequest());
+		return "login";
+	}
+	
+	@RequestMapping("/main")
+	public String handleStep4(RegisterRequest regReq)
+	{
+		return "main";
+	}
+	
+//	@PostMapping("/result")
+//	public String result(RegisterRequest regReq, Model model)
+//	{
+//		int count = memberRegisterService.checkCount(regReq);
+//		
+//		if (count > 0)
+//		{
+//			model.addAttribute("result", regReq.getEmail()+"님 환영합니다.");
+//		}
+//		else
+//		{
+//			model.addAttribute("result", "올바른 아이디 암호가 아닙니다.");
+//		}
+//		return "/main";
+//	}
+	
+	@PostMapping("/main")
+	public String handleStep5(RegisterRequest regReq, Model model)
+	{
+		try
+		{
+			memberRegisterService.loginCheck(regReq);
+			model.addAttribute("result", regReq.getEmail()+"님 환영합니다.");
+			return "main";
+		}
+		catch (MemberNotFoundException ex)
+		{
+			model.addAttribute("result", "올바른 이메일과 비밀번호가 아닙니다.");
+			return "main";
+		}
+	}
+	
+	
+	
+	
 }
 
 
