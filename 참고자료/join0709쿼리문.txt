@@ -1,0 +1,21 @@
+CREATE TABLE `board` (
+   `id` bigint NOT NULL AUTO_INCREMENT,
+   `subject` varchar(300) NOT NULL,
+   `content` text,
+   `writer` varchar(100) NOT NULL,
+   `password` varchar(300) NOT NULL,
+   `register_datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   PRIMARY KEY (`id`)
+ );
+  
+CREATE TABLE `board_reply` (
+   `reply_id` bigint NOT NULL AUTO_INCREMENT,
+   `board_id` bigint,
+   `parent_id` bigint,
+   `depth` int,
+   `reply_content` text,
+   `reply_writer` varchar(100) NOT NULL,
+   `reply_password` varchar(300) NOT NULL,
+   `register_datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   PRIMARY KEY (`reply_id`)
+ );
