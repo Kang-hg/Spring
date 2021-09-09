@@ -21,6 +21,20 @@ import org.springframework.jdbc.support.KeyHolder;
 public class MemberDao {
 	
 	private JdbcTemplate jdbcTemplate;
+	private RowMapper<Member> memRowMapper =
+			new RowMapper<Member>() {
+				@Override
+				public Member mapRow(ResultSet rs, int rowNum)
+						throws SQLException {
+					// Member 객체를 생성 생성자에서 이메일, 패스워드, 이름, 날짜, 아이디 순으로 넣어서 객채를 생성
+					Member member = new Member(rs.getString("EMAIL"),
+							rs.getString("PASSWORD"),
+							rs.getString("NAME"),
+							rs.getTimestamp("REGDATE").toLocalDateTime());
+					member.setId(rs.getLong("ID"));
+					return member;
+				}
+			};
 	
 	public MemberDao(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
@@ -30,21 +44,8 @@ public class MemberDao {
 	{
 		List<Member> results = jdbcTemplate.query(
 				"select * from MEMBER where EMAIL = ?",
-				new RowMapper<Member>() {
-					@Override
-					public Member mapRow(ResultSet rs, int rowNum)
-						throws SQLException 
-						{
-						Member member = new Member(
-								rs.getString("EMAIL"),
-								rs.getString("PASSWORD"),
-								rs.getString("NAME"),
-								rs.getTimestamp("REGDATE").toLocalDateTime());
-						member.setId(rs.getLong("ID"));
-						return member;
-						}
-				},
-				email);
+				memRowMapper, email);
+		
 		return results.isEmpty() ? null : results.get(0);
 	}
 	
@@ -110,50 +111,37 @@ public class MemberDao {
 				member.getName(), member.getPassword(),member.getBirthdate(), member.getEmail());
 	}
 	
-	// 생년월일 추가
-//	public List<Member> selectAll()
-//	{
-//		List<Member> results = jdbcTemplate.query(
-//				"select * from MEMBER",
-//				new RowMapper<Member>() {
-//					@Override
-//					public Member mapRow(ResultSet rs, int rowNum)
-//						throws SQLException 
-//						{
-//						Member member = new Member(
-//								rs.getString("EMAIL"),
-//								rs.getString("PASSWORD"),
-//								rs.getString("NAME"),
-//								rs.getTimestamp("REGDATE").toLocalDateTime(),
-//								rs.getString("BIRTHDATE"));
-//						member.setId(rs.getLong("ID"));
-//						return member;
-//						}
-//				});
-//		return results;
-//	}
+	public List<Member> selectAll()
+	{
+		List<Member> results = jdbcTemplate.query(
+				"select * from MEMBER", memRowMapper);
+		return results;
+	}
 	
 	public List<Member> selectByRegdate(
 						LocalDateTime from, LocalDateTime to)
-	{
+	{	// DB에 쿼리문을 전송
+		// DB의 결과를 List에 Member만 담을 수 있는 변수 result에 대입
 		List<Member> result = jdbcTemplate.query(
 			"select * from MEMBER where REGDATE between ? and ? "+
 			"order by REGDATE desc",
-			new RowMapper<Member>() {
-				@Override
-				public Member mapRow(ResultSet rs, int rowNum)
-					throws SQLException {
-					Member member = new Member(
-							rs.getString("EMAIL"),
-							rs.getString("PASSWORD"),
-							rs.getString("NAME"),
-							rs.getTimestamp("REGDATE").toLocalDateTime());
-					member.setId(rs.getLong("ID"));
-					return member;
-				}
-			},
+			memRowMapper,
 			from, to);
+		// 나를 호출 한 곳으로 List<Member>의 값을 돌려준다.
 		return result;
+	}
+	
+	public Member selectById(Long memId)
+	{	// Member 값을 List에 대입
+		List<Member> results = jdbcTemplate.query(
+				"select * from MEMBER where ID = ?",
+				memRowMapper, memId);
+		
+		// results 값이 비어 있으면 null 리턴
+		// 아니면 0번째 인덱스 값인 Member를 리턴
+		// 0번에 값만 있을 수 밖에 없는 이유 => where ID = ? 같은 id Member를 확인
+		// 기본키 이기 때문에 값이 1개일 수 밖에 없다.
+		return results.isEmpty() ? null : results.get(0);
 	}
 	
 	public int checkCount(String email, String pw)
