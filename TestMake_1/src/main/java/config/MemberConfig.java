@@ -39,7 +39,7 @@ public class MemberConfig {
 	@Bean
 	public NewDao dao()
 	{
-		return new NewDao();
+		return new NewDao(dataSource());
 	}
 	
 	@Bean
